@@ -1,0 +1,12 @@
+
+streamlit
+numpy
+pandas
+plotly
+opencv-python
+mediapipe
+soundfile
+librosa
+moviepy
+sounddevice
+faster-whisper
