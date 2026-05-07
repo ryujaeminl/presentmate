@@ -4,8 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> PresentMate - 발표 피드백 도우미
-  </title>
+  <title> PresentMate - 발표 피드백 도우미 </title>
 
   <link rel="icon" href="presen1.png" type="image/png">
 
@@ -13,965 +12,180 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
     rel="stylesheet">
-</head>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<!-- API 키 설정 파일 (config/api_config.js) -->
-<script src="config/api_config.js" onerror="console.log('api_config.js 없음 - 수동 입력 모드')"></script>
-<style>
-  :root {
-    --bg: #070b14;
-    --bg2: #0d1220;
-    --bg3: #131929;
-    --surface: #1a2235;
-    --surface2: #1f2940;
-    --border: #2a3650;
-    --accent: #00e5cc;
-    --accent2: #7c6fff;
-    --accent3: #ff6b8a;
-    --text: #e8edf5;
-    --text2: #8a97b0;
-    --text3: #5a6a85;
-    --success: #00d68f;
-    --warn: #ffaa00;
-    --danger: #ff4d6d;
-  }
-
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(ellipse 80% 50% at 20% -10%, rgba(0, 229, 204, .06) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 80% 110%, rgba(124, 111, 255, .05) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(7, 11, 20, .9);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    height: 64px;
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: .6rem;
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 1.3rem;
-    letter-spacing: -.02em;
-    color: var(--text);
-    text-decoration: none;
-  }
-
-  .logo-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-  }
-
-  nav {
-    display: flex;
-    gap: .25rem;
-    margin-left: auto;
-  }
-
-  .nav-btn {
-    padding: .45rem 1rem;
-    border-radius: 8px;
-    border: none;
-    background: transparent;
-    color: var(--text2);
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    font-size: .9rem;
-    font-weight: 500;
-    transition: all .2s;
-  }
-
-  .nav-btn:hover {
-    background: var(--surface);
-    color: var(--text);
-  }
-
-  .nav-btn.active {
-    background: var(--surface2);
-    color: var(--accent);
-    box-shadow: inset 0 0 0 1px rgba(0, 229, 204, .2);
-  }
-
-  #api-banner {
-    background: linear-gradient(90deg, rgba(0, 229, 204, .08), rgba(124, 111, 255, .08));
-    border-bottom: 1px solid rgba(0, 229, 204, .15);
-    padding: .75rem 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  #api-banner span {
-    font-size: .9rem;
-    color: var(--text2);
-  }
-
-  #api-banner span strong {
-    color: var(--accent);
-  }
-
-  .api-input-row {
-    display: flex;
-    gap: .5rem;
-    flex: 1;
-    min-width: 280px;
-  }
-
-  .api-input-row input {
-    flex: 1;
-    padding: .5rem .8rem;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text);
-    font-family: inherit;
-    font-size: .9rem;
-    outline: none;
-  }
-
-  .api-input-row input:focus {
-    border-color: var(--accent);
-  }
-
-  .btn-sm {
-    padding: .5rem 1rem;
-    border-radius: 8px;
-    border: none;
-    background: var(--accent);
-    color: var(--bg);
-    cursor: pointer;
-    font-weight: 600;
-    font-size: .85rem;
-    font-family: inherit;
-    transition: opacity .2s;
-    white-space: nowrap;
-  }
-
-  .btn-sm:hover {
-    opacity: .85;
-  }
-
-  .btn-sm.secondary {
-    background: var(--surface2);
-    color: var(--text2);
-    box-shadow: inset 0 0 0 1px var(--border);
-  }
-
-  .btn-sm.danger {
-    background: var(--danger);
-    color: #fff;
-  }
-
-  .page {
-    display: none;
-    padding: 2rem;
-    position: relative;
-    z-index: 1;
-  }
-
-  .page.active {
-    display: block;
-    animation: pageIn .3s ease;
-  }
-
-  .page-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  @keyframes pageIn {
-    from {
-      opacity: 0;
-      transform: translateY(8px)
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="config/api_config.js" onerror="console.log('api_config.js 없음 - 수동 입력 모드')"></script>
+  <style>
+    :root {
+      --bg: #070b14;
+      --bg2: #0d1220;
+      --bg3: #131929;
+      --surface: #1a2235;
+      --surface2: #1f2940;
+      --border: #2a3650;
+      --accent: #00e5cc;
+      --accent2: #7c6fff;
+      --accent3: #ff6b8a;
+      --text: #e8edf5;
+      --text2: #8a97b0;
+      --text3: #5a6a85;
+      --success: #00d68f;
+      --warn: #ffaa00;
+      --danger: #ff4d6d;
     }
 
-    to {
-      opacity: 1;
-      transform: none
-    }
-  }
-
-  .home-hero {
-    padding: 4rem 0 3rem;
-    text-align: center;
-  }
-
-  .home-hero h1 {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: clamp(2.5rem, 5vw, 3.8rem);
-    line-height: 1.1;
-    margin-bottom: 1rem;
-    background: linear-gradient(135deg, var(--text) 30%, var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .home-hero p {
-    font-size: 1.15rem;
-    color: var(--text2);
-    max-width: 520px;
-    margin: 0 auto 2.5rem;
-    line-height: 1.7;
-  }
-
-  .home-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.25rem;
-    margin-top: 2rem;
-  }
-
-  .home-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 2rem;
-    cursor: pointer;
-    transition: all .25s;
-    text-align: left;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .home-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 50% 0%, rgba(0, 229, 204, .06), transparent 60%);
-    opacity: 0;
-    transition: opacity .3s;
-  }
-
-  .home-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-3px);
-    box-shadow: 0 12px 40px rgba(0, 229, 204, .1);
-  }
-
-  .home-card:hover::before {
-    opacity: 1;
-  }
-
-  .home-card .card-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .home-card h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.2rem;
-    margin-bottom: .5rem;
-  }
-
-  .home-card p {
-    color: var(--text2);
-    font-size: .9rem;
-    line-height: 1.6;
-  }
-
-  .card-badge {
-    display: inline-block;
-    padding: .25rem .6rem;
-    border-radius: 20px;
-    font-size: .75rem;
-    font-weight: 600;
-    margin-bottom: .75rem;
-    background: rgba(0, 229, 204, .12);
-    color: var(--accent);
-    border: 1px solid rgba(0, 229, 204, .2);
-  }
-
-  .grid-2 {
-    display: grid;
-    grid-template-columns: 1fr minmax(240px, 300px);
-    gap: 1.25rem;
-  }
-
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .panel-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    margin-bottom: 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    color: var(--text);
-  }
-
-  .panel-title .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-  }
-
-  label {
-    font-size: .85rem;
-    color: var(--text2);
-    display: block;
-    margin-bottom: .4rem;
-  }
-
-  input[type=range] {
-    width: 100%;
-    accent-color: var(--accent);
-    cursor: pointer;
-  }
-
-  select,
-  textarea,
-  input[type=text] {
-    width: 100%;
-    padding: .55rem .8rem;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--bg2);
-    color: var(--text);
-    font-family: inherit;
-    font-size: .9rem;
-    outline: none;
-    transition: border-color .2s;
-  }
-
-  select:focus,
-  textarea:focus,
-  input[type=text]:focus {
-    border-color: var(--accent);
-  }
-
-  textarea {
-    resize: vertical;
-    min-height: 100px;
-    line-height: 1.6;
-  }
-
-  .form-row {
-    margin-bottom: 1rem;
-  }
-
-  .range-row {
-    display: flex;
-    align-items: center;
-    gap: .75rem;
-    margin-bottom: .9rem;
-  }
-
-  .range-row label {
-    margin: 0;
-    flex: 1;
-    white-space: nowrap;
-  }
-
-  .range-val {
-    font-size: .85rem;
-    color: var(--accent);
-    min-width: 38px;
-    text-align: right;
-  }
-
-  .toggle-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: .9rem;
-  }
-
-  .toggle-label {
-    font-size: .85rem;
-    color: var(--text2);
-  }
-
-  .toggle {
-    position: relative;
-    width: 38px;
-    height: 21px;
-  }
-
-  .toggle input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-
-  .toggle-slider {
-    position: absolute;
-    inset: 0;
-    cursor: pointer;
-    background: var(--surface2);
-    border-radius: 21px;
-    transition: .2s;
-    border: 1px solid var(--border);
-  }
-
-  .toggle-slider:before {
-    content: '';
-    position: absolute;
-    width: 15px;
-    height: 15px;
-    left: 2px;
-    bottom: 2px;
-    background: var(--text3);
-    border-radius: 50%;
-    transition: .2s;
-  }
-
-  .toggle input:checked+.toggle-slider {
-    background: rgba(0, 229, 204, .2);
-    border-color: var(--accent);
-  }
-
-  .toggle input:checked+.toggle-slider:before {
-    transform: translateX(17px);
-    background: var(--accent);
-  }
-
-  .upload-area {
-    border: 2px dashed var(--border);
-    border-radius: 12px;
-    padding: 2.5rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all .2s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .upload-area:hover,
-  .upload-area.drag-over {
-    border-color: var(--accent);
-    background: rgba(0, 229, 204, .04);
-  }
-
-  .upload-area input {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-  }
-
-  .upload-icon {
-    font-size: 2.5rem;
-    margin-bottom: .75rem;
-  }
-
-  .upload-area h4 {
-    font-size: 1rem;
-    margin-bottom: .35rem;
-  }
-
-  .upload-area p {
-    font-size: .85rem;
-    color: var(--text3);
-  }
-
-  .metrics-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: .75rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .metric-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1rem;
-    text-align: center;
-  }
-
-  .metric-val {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--accent);
-  }
-
-  .metric-label {
-    font-size: .75rem;
-    color: var(--text3);
-    margin-top: .25rem;
-  }
-
-  .alert {
-    padding: .75rem 1rem;
-    border-radius: 10px;
-    font-size: .88rem;
-    margin-bottom: .75rem;
-    display: flex;
-    align-items: flex-start;
-    gap: .6rem;
-  }
-
-  .alert-info {
-    background: rgba(0, 229, 204, .08);
-    border: 1px solid rgba(0, 229, 204, .2);
-    color: var(--accent);
-  }
-
-  .alert-warn {
-    background: rgba(255, 170, 0, .08);
-    border: 1px solid rgba(255, 170, 0, .2);
-    color: var(--warn);
-  }
-
-  .alert-danger {
-    background: rgba(255, 77, 109, .1);
-    border: 1px solid rgba(255, 77, 109, .25);
-    color: var(--danger);
-  }
-
-  .alert-success {
-    background: rgba(0, 214, 143, .08);
-    border: 1px solid rgba(0, 214, 143, .2);
-    color: var(--success);
-  }
-
-  .filler-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .5rem;
-    margin-top: .75rem;
-  }
-
-  .filler-chip {
-    padding: .3rem .7rem;
-    border-radius: 20px;
-    font-size: .82rem;
-    font-weight: 500;
-    background: rgba(124, 111, 255, .15);
-    color: var(--accent2);
-    border: 1px solid rgba(124, 111, 255, .25);
-  }
-
-  .filler-chip span {
-    font-weight: 700;
-    color: var(--accent3);
-  }
-
-  .chart-wrap {
-    position: relative;
-    height: 200px;
-  }
-
-  .live-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
-  }
-
-  @media (max-width: 700px) {
-    .live-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .grid-2 {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .cam-box {
-    background: #000;
-    border-radius: 12px;
-    overflow: hidden;
-    aspect-ratio: 16/9;
-    position: relative;
-  }
-
-  video#liveVideo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transform: scaleX(-1);
-  }
-
-  .cam-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: .75rem 1rem;
-    background: linear-gradient(transparent, rgba(0, 0, 0, .7));
-    display: flex;
-    align-items: center;
-    gap: .75rem;
-  }
-
-  .rec-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--danger);
-    animation: blink 1s infinite;
-  }
-
-  @keyframes blink {
-
-    0%,
-    100% {
-      opacity: 1
-    }
-
-    50% {
-      opacity: .2
-    }
-  }
-
-  .vol-meter {
-    width: 100%;
-    height: 10px;
-    background: var(--bg2);
-    border-radius: 5px;
-    overflow: hidden;
-    margin-top: .5rem;
-  }
-
-  .vol-bar {
-    height: 100%;
-    border-radius: 5px;
-    width: 0%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    transition: width .1s;
-  }
-
-  #live-transcript {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1rem;
-    height: 200px;
-    overflow-y: auto;
-    font-size: .9rem;
-    line-height: 1.7;
-    color: var(--text);
-    white-space: pre-wrap;
-  }
-
-  #live-transcript .interim {
-    color: var(--text3);
-  }
-
-  #silence-alert,
-  #gaze-alert {
-    display: none;
-    padding: .6rem 1rem;
-    border-radius: 8px;
-    font-size: .88rem;
-    font-weight: 500;
-    margin-top: .5rem;
-    animation: fadeIn .3s;
-  }
-
-  #silence-alert {
-    background: rgba(255, 170, 0, .15);
-    color: var(--warn);
-    border: 1px solid rgba(255, 170, 0, .3);
-  }
-
-  #gaze-alert {
-    background: rgba(255, 77, 109, .12);
-    color: var(--danger);
-    border: 1px solid rgba(255, 77, 109, .3);
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-4px)
-    }
-
-    to {
-      opacity: 1;
-      transform: none
-    }
-  }
-
-  .ai-box {
-    background: var(--bg2);
-    border: 1px solid rgba(0, 229, 204, .15);
-    border-radius: 12px;
-    padding: 1.25rem;
-    font-size: .9rem;
-    line-height: 1.7;
-    color: var(--text);
-    min-height: 80px;
-  }
-
-  .ai-box .thinking {
-    color: var(--text3);
-    animation: pulse .8s infinite alternate;
-  }
-
-  @keyframes pulse {
-    from {
-      opacity: .4
-    }
-
-    to {
-      opacity: 1
-    }
-  }
-
-  .big-btn {
-    padding: .8rem 2rem;
-    border-radius: 12px;
-    border: none;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all .2s;
-    display: inline-flex;
-    align-items: center;
-    gap: .5rem;
-  }
-
-  .big-btn.primary {
-    background: var(--accent);
-    color: var(--bg);
-  }
-
-  .big-btn.primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 229, 204, .25);
-  }
-
-  .big-btn.primary:disabled {
-    opacity: .4;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-  }
-
-  .big-btn.stop {
-    background: var(--danger);
-    color: #fff;
-  }
-
-  .big-btn.stop:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(255, 77, 109, .25);
-  }
-
-  #waveformCanvas {
-    width: 100%;
-    height: 80px;
-    border-radius: 8px;
-    background: var(--bg2);
-    display: block;
-  }
-
-  #liveWaveCanvas {
-    width: 100%;
-    height: 60px;
-    border-radius: 8px;
-    background: var(--bg2);
-    display: block;
-    margin-top: .5rem;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: .85rem;
-  }
-
-  th,
-  td {
-    padding: .5rem .75rem;
-    border-bottom: 1px solid var(--border);
-    text-align: left;
-  }
-
-  th {
-    color: var(--text3);
-    font-weight: 500;
-  }
-
-  td {
-    color: var(--text2);
-  }
-
-  tr:last-child td {
-    border-bottom: none;
-  }
-
-  .spinner {
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--surface2);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin .7s linear infinite;
-    display: inline-block;
-  }
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 1.5rem 0;
-  }
-
-  ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: var(--surface2);
-    border-radius: 10px;
-  }
-
-  /* Structure feedback */
-  .struct-item {
-    display: flex;
-    gap: .6rem;
-    margin-bottom: .6rem;
-    font-size: .88rem;
-    line-height: 1.5;
-  }
-
-  .struct-icon {
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: .75rem;
-    margin-top: 1px;
-  }
-
-  .struct-ok {
-    background: rgba(0, 214, 143, .15);
-    color: var(--success);
-  }
-
-  .struct-warn {
-    background: rgba(255, 170, 0, .15);
-    color: var(--warn);
-  }
-
-  /* Tremor meter */
-  .tremor-bar-wrap {
-    background: var(--bg2);
-    border-radius: 20px;
-    height: 10px;
-    overflow: hidden;
-    margin: .5rem 0;
-  }
-
-  .tremor-bar {
-    height: 100%;
-    border-radius: 20px;
-    transition: width .5s;
-  }
-
-  /* Speed trend */
-  .speed-comment {
-    padding: .75rem 1rem;
-    border-radius: 10px;
-    font-size: .88rem;
-    margin-top: .75rem;
-    background: rgba(0, 229, 204, .08);
-    border: 1px solid rgba(0, 229, 204, .15);
-    color: var(--text);
-    line-height: 1.6;
-  }
-
-  /* Export row */
-  .export-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .5rem;
-    margin-top: .75rem;
-  }
-
-  /* Tabs */
-  .tab-row {
-    display: flex;
-    gap: .25rem;
-    margin-bottom: 1rem;
-  }
-
-  .tab-btn {
-    padding: .4rem .9rem;
-    border-radius: 8px;
-    border: none;
-    background: var(--surface2);
-    color: var(--text2);
-    cursor: pointer;
-    font-family: inherit;
-    font-size: .82rem;
-    transition: all .2s;
-  }
-
-  .tab-btn.active {
-    background: rgba(0, 229, 204, .12);
-    color: var(--accent);
-    border: 1px solid rgba(0, 229, 204, .2);
-  }
-</style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+    body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 80% 50% at 20% -10%, rgba(0, 229, 204, .06) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 80% 110%, rgba(124, 111, 255, .05) 0%, transparent 60%); pointer-events: none; z-index: 0; }
+    header { position: sticky; top: 0; z-index: 100; background: rgba(7, 11, 20, .9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; gap: 1.5rem; height: 64px; }
+    .logo { display: flex; align-items: center; gap: .6rem; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; letter-spacing: -.02em; color: var(--text); text-decoration: none; }
+    nav { display: flex; gap: .25rem; margin-left: auto; }
+    .nav-btn { padding: .45rem 1rem; border-radius: 8px; border: none; background: transparent; color: var(--text2); cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 500; transition: all .2s; }
+    .nav-btn:hover { background: var(--surface); color: var(--text); }
+    .nav-btn.active { background: var(--surface2); color: var(--accent); box-shadow: inset 0 0 0 1px rgba(0, 229, 204, .2); }
+    
+    #api-banner { background: linear-gradient(90deg, rgba(0, 229, 204, .08), rgba(124, 111, 255, .08)); border-bottom: 1px solid rgba(0, 229, 204, .15); padding: .75rem 2rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    #api-banner span { font-size: .9rem; color: var(--text2); }
+    #api-banner span strong { color: var(--accent); }
+    .api-input-row { display: flex; gap: .5rem; flex: 1; min-width: 280px; }
+    .api-input-row input { flex: 1; padding: .5rem .8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: inherit; font-size: .9rem; outline: none; }
+    .api-input-row input:focus { border-color: var(--accent); }
+    
+    .btn-sm { padding: .5rem 1rem; border-radius: 8px; border: none; background: var(--accent); color: var(--bg); cursor: pointer; font-weight: 600; font-size: .85rem; font-family: inherit; transition: opacity .2s; white-space: nowrap; }
+    .btn-sm:hover { opacity: .85; }
+    .btn-sm.secondary { background: var(--surface2); color: var(--text2); box-shadow: inset 0 0 0 1px var(--border); }
+    .btn-sm.danger { background: var(--danger); color: #fff; }
+    .btn-sm:disabled { opacity: 0.5; cursor: not-allowed; }
+    
+    .page { display: none; padding: 2rem; position: relative; z-index: 1; }
+    .page.active { display: block; animation: pageIn .3s ease; }
+    .page-inner { max-width: 1200px; margin: 0 auto; }
+    @keyframes pageIn { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+    
+    .home-hero { padding: 4rem 0 3rem; text-align: center; }
+    .home-hero h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2.5rem, 5vw, 3.8rem); line-height: 1.1; margin-bottom: 1rem; background: linear-gradient(135deg, var(--text) 30%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .home-hero p { font-size: 1.15rem; color: var(--text2); max-width: 520px; margin: 0 auto 2.5rem; line-height: 1.7; }
+    .home-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; margin-top: 2rem; }
+    .home-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; cursor: pointer; transition: all .25s; text-align: left; position: relative; overflow: hidden; }
+    .home-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 0%, rgba(0, 229, 204, .06), transparent 60%); opacity: 0; transition: opacity .3s; }
+    .home-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0, 229, 204, .1); }
+    .home-card:hover::before { opacity: 1; }
+    .home-card .card-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .home-card h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; margin-bottom: .5rem; }
+    .home-card p { color: var(--text2); font-size: .9rem; line-height: 1.6; }
+    .card-badge { display: inline-block; padding: .25rem .6rem; border-radius: 20px; font-size: .75rem; font-weight: 600; margin-bottom: .75rem; background: rgba(0, 229, 204, .12); color: var(--accent); border: 1px solid rgba(0, 229, 204, .2); }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr minmax(240px, 300px); gap: 1.25rem; }
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.25rem; }
+    .panel-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: .5rem; color: var(--text); }
+    .panel-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+    
+    label { font-size: .85rem; color: var(--text2); display: block; margin-bottom: .4rem; }
+    input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+    select, textarea, input[type=text] { width: 100%; padding: .55rem .8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg2); color: var(--text); font-family: inherit; font-size: .9rem; outline: none; transition: border-color .2s; }
+    select:focus, textarea:focus, input[type=text]:focus { border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+    
+    .form-row { margin-bottom: 1rem; }
+    .range-row { display: flex; align-items: center; gap: .75rem; margin-bottom: .9rem; }
+    .range-row label { margin: 0; flex: 1; white-space: nowrap; }
+    .range-val { font-size: .85rem; color: var(--accent); min-width: 38px; text-align: right; }
+    
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: .9rem; }
+    .toggle-label { font-size: .85rem; color: var(--text2); }
+    .toggle { position: relative; width: 38px; height: 21px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; inset: 0; cursor: pointer; background: var(--surface2); border-radius: 21px; transition: .2s; border: 1px solid var(--border); }
+    .toggle-slider:before { content: ''; position: absolute; width: 15px; height: 15px; left: 2px; bottom: 2px; background: var(--text3); border-radius: 50%; transition: .2s; }
+    .toggle input:checked+.toggle-slider { background: rgba(0, 229, 204, .2); border-color: var(--accent); }
+    .toggle input:checked+.toggle-slider:before { transform: translateX(17px); background: var(--accent); }
+    
+    .upload-area { border: 2px dashed var(--border); border-radius: 12px; padding: 2.5rem; text-align: center; cursor: pointer; transition: all .2s; position: relative; overflow: hidden; }
+    .upload-area:hover, .upload-area.drag-over { border-color: var(--accent); background: rgba(0, 229, 204, .04); }
+    .upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .upload-icon { font-size: 2.5rem; margin-bottom: .75rem; }
+    .upload-area h4 { font-size: 1rem; margin-bottom: .35rem; }
+    .upload-area p { font-size: .85rem; color: var(--text3); }
+    
+    .metrics-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: .75rem; margin-bottom: 1.25rem; }
+    .metric-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; text-align: center; }
+    .metric-val { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--accent); }
+    .metric-label { font-size: .75rem; color: var(--text3); margin-top: .25rem; }
+    
+    .alert { padding: .75rem 1rem; border-radius: 10px; font-size: .88rem; margin-bottom: .75rem; display: flex; align-items: flex-start; gap: .6rem; }
+    .alert-info { background: rgba(0, 229, 204, .08); border: 1px solid rgba(0, 229, 204, .2); color: var(--accent); }
+    .alert-warn { background: rgba(255, 170, 0, .08); border: 1px solid rgba(255, 170, 0, .2); color: var(--warn); }
+    .alert-danger { background: rgba(255, 77, 109, .1); border: 1px solid rgba(255, 77, 109, .25); color: var(--danger); }
+    .alert-success { background: rgba(0, 214, 143, .08); border: 1px solid rgba(0, 214, 143, .2); color: var(--success); }
+    
+    .filler-chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .75rem; }
+    .filler-chip { padding: .3rem .7rem; border-radius: 20px; font-size: .82rem; font-weight: 500; background: rgba(124, 111, 255, .15); color: var(--accent2); border: 1px solid rgba(124, 111, 255, .25); }
+    .filler-chip span { font-weight: 700; color: var(--accent3); }
+    
+    .chart-wrap { position: relative; height: 200px; }
+    .live-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media (max-width: 700px) { .live-grid { grid-template-columns: 1fr; } .grid-2 { grid-template-columns: 1fr; } }
+    
+    .cam-box { background: #000; border-radius: 12px; overflow: hidden; aspect-ratio: 16/9; position: relative; }
+    video#liveVideo { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+    .cam-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: .75rem 1rem; background: linear-gradient(transparent, rgba(0, 0, 0, .7)); display: flex; align-items: center; gap: .75rem; }
+    .rec-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--danger); animation: blink 1s infinite; }
+    @keyframes blink { 0%, 100% { opacity: 1 } 50% { opacity: .2 } }
+    
+    .vol-meter { width: 100%; height: 10px; background: var(--bg2); border-radius: 5px; overflow: hidden; margin-top: .5rem; }
+    .vol-bar { height: 100%; border-radius: 5px; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width .1s; }
+    
+    #live-transcript { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; height: 200px; overflow-y: auto; font-size: .9rem; line-height: 1.7; color: var(--text); white-space: pre-wrap; }
+    #live-transcript .interim { color: var(--text3); }
+    
+    #silence-alert, #gaze-alert { display: none; padding: .6rem 1rem; border-radius: 8px; font-size: .88rem; font-weight: 500; margin-top: .5rem; animation: fadeIn .3s; }
+    #silence-alert { background: rgba(255, 170, 0, .15); color: var(--warn); border: 1px solid rgba(255, 170, 0, .3); }
+    #gaze-alert { background: rgba(255, 77, 109, .12); color: var(--danger); border: 1px solid rgba(255, 77, 109, .3); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px) } to { opacity: 1; transform: none } }
+    
+    .ai-box { background: var(--bg2); border: 1px solid rgba(0, 229, 204, .15); border-radius: 12px; padding: 1.25rem; font-size: .9rem; line-height: 1.7; color: var(--text); min-height: 80px; }
+    .ai-box .thinking { color: var(--text3); animation: pulse .8s infinite alternate; }
+    @keyframes pulse { from { opacity: .4 } to { opacity: 1 } }
+    
+    .big-btn { padding: .8rem 2rem; border-radius: 12px; border: none; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; }
+    .big-btn.primary { background: var(--accent); color: var(--bg); }
+    .big-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 229, 204, .25); }
+    .big-btn.primary:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .big-btn.stop { background: var(--danger); color: #fff; }
+    .big-btn.stop:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255, 77, 109, .25); }
+    
+    #waveformCanvas, #liveWaveCanvas { width: 100%; border-radius: 8px; background: var(--bg2); display: block; }
+    #waveformCanvas { height: 80px; }
+    #liveWaveCanvas { height: 60px; margin-top: .5rem; }
+    
+    table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    th, td { padding: .5rem .75rem; border-bottom: 1px solid var(--border); text-align: left; }
+    th { color: var(--text3); font-weight: 500; }
+    td { color: var(--text2); }
+    tr:last-child td { border-bottom: none; }
+    
+    .spinner { width: 20px; height: 20px; border: 2px solid var(--surface2); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 10px; }
+    
+    .struct-item { display: flex; gap: .6rem; margin-bottom: .6rem; font-size: .88rem; line-height: 1.5; }
+    .struct-icon { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .75rem; margin-top: 1px; }
+    .struct-ok { background: rgba(0, 214, 143, .15); color: var(--success); }
+    .struct-warn { background: rgba(255, 170, 0, .15); color: var(--warn); }
+    
+    .tremor-bar-wrap { background: var(--bg2); border-radius: 20px; height: 10px; overflow: hidden; margin: .5rem 0; }
+    .tremor-bar { height: 100%; border-radius: 20px; transition: width .5s; }
+    
+    .speed-comment { padding: .75rem 1rem; border-radius: 10px; font-size: .88rem; margin-top: .75rem; background: rgba(0, 229, 204, .08); border: 1px solid rgba(0, 229, 204, .15); color: var(--text); line-height: 1.6; }
+    .export-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .75rem; }
+  </style>
 </head>
 
 <body>
 
-  <!-- Header -->
   <header>
     <a class="logo" href="#" onclick="showPage('home');return false;">
       <img src="presen1.png" alt="로고" style="height: 48px; width: auto; object-fit: contain;">
@@ -983,17 +197,15 @@
     </nav>
   </header>
 
-  <!-- API Key Banner -->
   <div id="api-banner">
-    <span>AI 피드백을 받으려면 <strong>Anthropic API 키</strong>를 입력하거나 <code>config/api_config.js</code> 에 미리 저장하세요 (선택)</span>
+    <span>AI 피드백 및 STT를 받으려면 <strong>Gemini API 키</strong>를 입력하거나 <code>config/api_config.js</code> 에 미리 저장하세요</span>
     <div class="api-input-row">
-      <input type="password" id="apiKeyInput" placeholder="sk-ant-..." />
+      <input type="password" id="apiKeyInput" placeholder="AIzaSy..." />
       <button class="btn-sm" onclick="saveApiKey()">저장</button>
       <button class="btn-sm secondary" id="apiSkipBtn" onclick="skipApiKey()">나중에</button>
     </div>
   </div>
 
-  <!-- ╔═══════════ HOME ═══════════╗ -->
   <div class="page active" id="page-home">
     <div class="page-inner">
       <div class="home-hero">
@@ -1021,19 +233,16 @@
         </div>
         <p style="font-size:.9rem;color:var(--text2);line-height:1.7">
           Python·Streamlit·ffmpeg 없이 브라우저만으로 작동합니다. 마이크·카메라 권한만 허용하면 바로 사용할 수 있습니다.
-          AI 피드백 기능은 Anthropic API 키가 필요하지만, 없어도 음향·구조·속도 분석은 모두 가능합니다.<br>
-          <strong style="color:var(--accent)">API 키 저장:</strong> <code>config/api_config.js</code> 파일에 키를 입력하면 매번 입력할
-          필요가 없습니다.
+          AI 피드백 및 전사 기능은 Gemini API 키가 필요하지만, 없어도 음향·구조·속도 분석은 모두 가능합니다.<br>
+          <strong style="color:var(--accent)">API 키 저장:</strong> <code>config/api_config.js</code> 파일에 키를 입력하면 매번 입력할 필요가 없습니다.
         </p>
       </div>
     </div>
   </div>
 
-  <!-- ╔═══════════ UPLOAD ═══════════╗ -->
   <div class="page" id="page-upload">
     <div class="page-inner">
       <div class="grid-2">
-        <!-- Left: main -->
         <div>
           <div class="panel">
             <div class="panel-title">
@@ -1055,76 +264,55 @@
               <div class="dot" style="background:var(--accent2)"></div>전사 텍스트
             </div>
             <p style="font-size:.85rem;color:var(--text3);margin-bottom:.75rem">
-              브라우저 내장 음성 인식을 이용하거나, 직접 텍스트를 입력/붙여넣기 하세요.
+              Gemini AI를 이용한 자동 전사, 브라우저 음성 인식, 또는 직접 입력이 가능합니다.
             </p>
             <div style="display:flex;gap:.5rem;margin-bottom:.75rem;flex-wrap:wrap">
-              <button class="btn-sm" onclick="startBrowserSTT()" id="sttBtn">🎙️ 음성 인식 시작</button>
+              <button class="btn-sm" onclick="startBrowserSTT()" id="sttBtn">🎙️ 브라우저 STT</button>
+              <button class="btn-sm" style="background:var(--accent2);color:#fff" onclick="extractTranscriptWithGemini()" id="aiSttBtn">✨ AI 영상/음성 자동 전사</button>
               <button class="btn-sm secondary" onclick="clearTranscript()">초기화</button>
             </div>
-            <textarea id="transcriptArea" rows="6" placeholder="전사 텍스트를 여기에 입력하거나 음성 인식 결과가 표시됩니다..."></textarea>
+            <textarea id="transcriptArea" rows="6" placeholder="전사 텍스트를 여기에 입력하거나 추출 결과가 표시됩니다..."></textarea>
             <div id="langMismatchAlert" style="display:none;margin-top:.5rem"></div>
           </div>
 
           <div id="analysisResults" style="display:none">
             <div class="metrics-row" id="metricsRow"></div>
 
-            <!-- 속도 코멘트 -->
             <div id="speedCommentBox" style="margin-bottom:1.25rem"></div>
 
-            <!-- 볼륨 차트 -->
             <div class="panel">
-              <div class="panel-title">
-                <div class="dot" style="background:var(--accent3)"></div>⏱️ 구간별 볼륨
-              </div>
+              <div class="panel-title"><div class="dot" style="background:var(--accent3)"></div>⏱️ 구간별 볼륨</div>
               <div class="chart-wrap"><canvas id="volumeChart"></canvas></div>
             </div>
 
-            <!-- 속도 추이 차트 (NEW) -->
             <div class="panel">
-              <div class="panel-title">
-                <div class="dot" style="background:var(--success)"></div>📈 구간별 속도 추이
-              </div>
+              <div class="panel-title"><div class="dot" style="background:var(--success)"></div>📈 구간별 속도 추이</div>
               <div class="chart-wrap"><canvas id="speedTrendChart"></canvas></div>
               <div id="speedTrendComment" class="speed-comment" style="display:none"></div>
             </div>
 
-            <!-- 침묵 구간 -->
             <div class="panel" id="pausePanel">
-              <div class="panel-title">
-                <div class="dot" style="background:var(--warn)"></div>🤫 침묵 구간
-              </div>
+              <div class="panel-title"><div class="dot" style="background:var(--warn)"></div>🤫 침묵 구간</div>
               <div id="pauseTable"></div>
             </div>
 
-            <!-- 군더더기 -->
             <div class="panel" id="fillerPanel">
-              <div class="panel-title">
-                <div class="dot" style="background:var(--accent2)"></div>🗣️ 군더더기 단어
-              </div>
+              <div class="panel-title"><div class="dot" style="background:var(--accent2)"></div>🗣️ 군더더기 단어</div>
               <div class="filler-chips" id="fillerChips"></div>
             </div>
 
-            <!-- 구조 분석 (NEW) -->
             <div class="panel" id="structurePanel">
-              <div class="panel-title">
-                <div class="dot" style="background:var(--accent2)"></div>📋 발표 구조 분석
-              </div>
+              <div class="panel-title"><div class="dot" style="background:var(--accent2)"></div>📋 발표 구조 분석</div>
               <div id="structureResult"></div>
             </div>
 
-            <!-- 목소리 떨림 (NEW) -->
             <div class="panel" id="tremorPanel">
-              <div class="panel-title">
-                <div class="dot" style="background:var(--accent3)"></div>🎵 목소리 안정성
-              </div>
+              <div class="panel-title"><div class="dot" style="background:var(--accent3)"></div>🎵 목소리 안정성</div>
               <div id="tremorResult"></div>
             </div>
 
-            <!-- AI 피드백 + 내보내기 -->
             <div class="panel" id="aiFeedbackPanel">
-              <div class="panel-title">
-                <div class="dot" style="background:var(--accent)"></div>🤖 AI 코칭
-              </div>
+              <div class="panel-title"><div class="dot" style="background:var(--accent)"></div>🤖 AI 코칭 (Gemini)</div>
               <div class="ai-box" id="aiFeedbackBox">AI 피드백이 여기에 표시됩니다. 분석 버튼을 눌러주세요.</div>
               <div style="margin-top:1rem;display:flex;gap:.5rem;flex-wrap:wrap">
                 <button class="big-btn primary" onclick="requestAIFeedback()" id="aiFeedbackBtn">✨ AI 피드백 받기</button>
@@ -1143,7 +331,6 @@
           </div>
         </div>
 
-        <!-- Right: settings -->
         <div>
           <div class="panel">
             <div class="panel-title">
@@ -1151,26 +338,22 @@
             </div>
             <div class="range-row">
               <label>침묵 감지 임계 (dB)</label>
-              <input type="range" min="5" max="40" value="20" id="silenceThresh"
-                oninput="document.getElementById('silenceThreshVal').textContent=this.value">
+              <input type="range" min="5" max="40" value="20" id="silenceThresh" oninput="document.getElementById('silenceThreshVal').textContent=this.value">
               <span class="range-val" id="silenceThreshVal">20</span>
             </div>
             <div class="range-row">
               <label>최소 침묵 길이 (ms)</label>
-              <input type="range" min="100" max="2000" step="100" value="300" id="minPause"
-                oninput="document.getElementById('minPauseVal').textContent=this.value">
+              <input type="range" min="100" max="2000" step="100" value="300" id="minPause" oninput="document.getElementById('minPauseVal').textContent=this.value">
               <span class="range-val" id="minPauseVal">300</span>
             </div>
             <div class="range-row">
               <label>볼륨 경고 (dBFS)</label>
-              <input type="range" min="-60" max="-10" value="-28" id="volWarn"
-                oninput="document.getElementById('volWarnVal').textContent=this.value">
+              <input type="range" min="-60" max="-10" value="-28" id="volWarn" oninput="document.getElementById('volWarnVal').textContent=this.value">
               <span class="range-val" id="volWarnVal">-28</span>
             </div>
             <div class="range-row">
               <label>속도 분석 구간 (초)</label>
-              <input type="range" min="3" max="15" value="5" id="binSec"
-                oninput="document.getElementById('binSecVal').textContent=this.value">
+              <input type="range" min="3" max="15" value="5" id="binSec" oninput="document.getElementById('binSecVal').textContent=this.value">
               <span class="range-val" id="binSecVal">5</span>
             </div>
             <div class="form-row">
@@ -1187,16 +370,13 @@
             </div>
             <div class="toggle-row">
               <span class="toggle-label">목소리 떨림 분석</span>
-              <label class="toggle"><input type="checkbox" id="tremorToggle" checked><span
-                  class="toggle-slider"></span></label>
+              <label class="toggle"><input type="checkbox" id="tremorToggle" checked><span class="toggle-slider"></span></label>
             </div>
             <div class="toggle-row">
               <span class="toggle-label">구조 분석</span>
-              <label class="toggle"><input type="checkbox" id="structureToggle" checked><span
-                  class="toggle-slider"></span></label>
+              <label class="toggle"><input type="checkbox" id="structureToggle" checked><span class="toggle-slider"></span></label>
             </div>
-            <button class="big-btn primary" style="width:100%;justify-content:center;margin-top:.5rem"
-              onclick="runAnalysis()" id="analyzeBtn" disabled>
+            <button class="big-btn primary" style="width:100%;margin-top:.5rem" onclick="runAnalysis()" id="analyzeBtn" disabled>
               🔍 분석 시작
             </button>
           </div>
@@ -1205,12 +385,10 @@
     </div>
   </div>
 
-  <!-- ╔═══════════ LIVE ═══════════╗ -->
   <div class="page" id="page-live">
     <div class="page-inner">
 
       <div class="live-grid">
-        <!-- Camera -->
         <div>
           <div class="panel-title" style="margin-bottom:.75rem">
             <div class="dot" style="background:var(--accent3)"></div>카메라 프리뷰
@@ -1231,105 +409,65 @@
           <div id="gaze-alert">👀 시선 주의 — 정면을 바라봐주세요</div>
         </div>
 
-        <!-- Controls + transcript -->
         <div>
           <div class="panel">
-            <div class="panel-title">
-              <div class="dot"></div>⚙️ 설정
-            </div>
+            <div class="panel-title"><div class="dot"></div>⚙️ 설정</div>
             <div class="range-row">
               <label>분석 주기 (초)</label>
-              <input type="range" min="3" max="15" value="5" id="liveInterval"
-                oninput="document.getElementById('liveIntervalVal').textContent=this.value">
+              <input type="range" min="3" max="15" value="5" id="liveInterval" oninput="document.getElementById('liveIntervalVal').textContent=this.value">
               <span class="range-val" id="liveIntervalVal">5</span>
             </div>
             <div class="range-row">
               <label>침묵 경고 기준 (초)</label>
-              <input type="range" min="2" max="10" value="4" id="silenceWarnSec"
-                oninput="document.getElementById('silenceWarnVal').textContent=this.value">
+              <input type="range" min="2" max="10" value="4" id="silenceWarnSec" oninput="document.getElementById('silenceWarnVal').textContent=this.value">
               <span class="range-val" id="silenceWarnVal">4</span>
             </div>
             <div class="toggle-row">
               <span class="toggle-label">카메라 사용</span>
-              <label class="toggle"><input type="checkbox" id="useCam" checked><span
-                  class="toggle-slider"></span></label>
+              <label class="toggle"><input type="checkbox" id="useCam" checked><span class="toggle-slider"></span></label>
             </div>
             <div class="toggle-row">
               <span class="toggle-label">시선 감지 (Chrome)</span>
-              <label class="toggle"><input type="checkbox" id="useGaze" checked><span
-                  class="toggle-slider"></span></label>
+              <label class="toggle"><input type="checkbox" id="useGaze" checked><span class="toggle-slider"></span></label>
             </div>
             <div style="display:flex;gap:.75rem;margin-top:.5rem">
-              <button class="big-btn primary" id="startLiveBtn" onclick="startLive()"
-                style="flex:1;justify-content:center">▶ 시작</button>
-              <button class="big-btn stop" id="stopLiveBtn" onclick="stopLive()"
-                style="flex:1;justify-content:center;display:none">■ 중지</button>
+              <button class="big-btn primary" id="startLiveBtn" onclick="startLive()" style="flex:1">▶ 시작</button>
+              <button class="big-btn stop" id="stopLiveBtn" onclick="stopLive()" style="flex:1;display:none">■ 중지</button>
             </div>
           </div>
 
           <div class="panel" style="margin-top:0">
-            <div class="panel-title">
-              <div class="dot" style="background:var(--accent2)"></div>실시간 전사
-            </div>
+            <div class="panel-title"><div class="dot" style="background:var(--accent2)"></div>실시간 전사</div>
             <div id="live-transcript"><span style="color:var(--text3)">발표를 시작하면 여기에 인식된 내용이 표시됩니다...</span></div>
             <button class="btn-sm secondary" style="margin-top:.75rem" onclick="clearLiveTranscript()">초기화</button>
           </div>
 
           <div class="panel" style="margin-top:0">
-            <div class="panel-title">
-              <div class="dot" style="background:var(--accent3)"></div>추임새 실시간 체크
-            </div>
-            <div class="filler-chips" id="liveFillerChips"><span style="color:var(--text3);font-size:.85rem">발표 시작 후
-                표시됩니다</span></div>
+            <div class="panel-title"><div class="dot" style="background:var(--accent3)"></div>추임새 실시간 체크</div>
+            <div class="filler-chips" id="liveFillerChips"><span style="color:var(--text3);font-size:.85rem">발표 시작 후 표시됩니다</span></div>
           </div>
 
-          <!-- 구조 분석 (라이브, NEW) -->
           <div class="panel" style="margin-top:0">
-            <div class="panel-title">
-              <div class="dot" style="background:var(--accent2)"></div>📋 발표 구조 피드백
-            </div>
+            <div class="panel-title"><div class="dot" style="background:var(--accent2)"></div>📋 발표 구조 피드백</div>
             <div id="liveStructureResult" style="color:var(--text3);font-size:.85rem">발표 종료 후 '구조 분석' 버튼을 누르세요.</div>
-            <button class="btn-sm secondary" style="margin-top:.75rem" onclick="analyzeLiveStructure()">📋 구조
-              분석</button>
+            <button class="btn-sm secondary" style="margin-top:.75rem" onclick="analyzeLiveStructure()">📋 구조 분석</button>
           </div>
 
           <div class="panel" style="margin-top:0">
-            <div class="panel-title">
-              <div class="dot"></div>🤖 AI 피드백
-            </div>
+            <div class="panel-title"><div class="dot"></div>🤖 AI 피드백 (Gemini)</div>
             <div class="ai-box" id="liveAiBox">발표를 멈춘 뒤 'AI 피드백' 버튼을 누르세요.</div>
-            <button class="big-btn primary" style="margin-top:.75rem" onclick="requestLiveAIFeedback()">✨ AI 피드백
-              받기</button>
+            <button class="big-btn primary" style="margin-top:.75rem" onclick="requestLiveAIFeedback()">✨ AI 피드백 받기</button>
           </div>
         </div>
       </div>
 
-      <!-- Live metrics row -->
       <div class="metrics-row" id="liveMetricsRow" style="margin-top:1.25rem">
-        <div class="metric-card">
-          <div class="metric-val" id="lm-dur">-</div>
-          <div class="metric-label">발표 시간</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-val" id="lm-wpm">-</div>
-          <div class="metric-label">WPM</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-val" id="lm-vol">-</div>
-          <div class="metric-label">볼륨 dBFS</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-val" id="lm-filler">0</div>
-          <div class="metric-label">추임새 수</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-val" id="lm-silence">0s</div>
-          <div class="metric-label">총 침묵</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-val" id="lm-gaze">-</div>
-          <div class="metric-label">시선 응시율</div>
-        </div>
+        <div class="metric-card"><div class="metric-val" id="lm-dur">-</div><div class="metric-label">발표 시간</div></div>
+        <div class="metric-card"><div class="metric-val" id="lm-wpm">-</div><div class="metric-label">WPM</div></div>
+        <div class="metric-card"><div class="metric-val" id="lm-vol">-</div><div class="metric-label">볼륨 dBFS</div></div>
+        <div class="metric-card"><div class="metric-val" id="lm-filler">0</div><div class="metric-label">추임새 수</div></div>
+        <div class="metric-card"><div class="metric-val" id="lm-silence">0s</div><div class="metric-label">총 침묵</div></div>
+        <div class="metric-card"><div class="metric-val" id="lm-gaze">-</div><div class="metric-label">시선 응시율</div></div>
       </div>
 
     </div>
@@ -1345,9 +483,8 @@
     let uploadedFile = null;
     let volumeChartInst = null;
     let speedChartInst = null;
-    let lastAnalysisData = null; // for CSV export
+    let lastAnalysisData = null;
 
-    // Live state
     let liveStream = null;
     let liveRecognition = null;
     let liveAnalyser = null;
@@ -1369,19 +506,19 @@
     // ── API 키 자동 로드 (config/api_config.js) ──────────────
     (function loadConfigKey() {
       try {
-        if (typeof API_CONFIG !== 'undefined' && API_CONFIG.anthropic_api_key) {
+        if (typeof API_CONFIG !== 'undefined' && API_CONFIG.gemini_api_key) {
+          apiKey = API_CONFIG.gemini_api_key.trim();
+        } else if (typeof API_CONFIG !== 'undefined' && API_CONFIG.anthropic_api_key) {
+          // 호환성 유지용
           apiKey = API_CONFIG.anthropic_api_key.trim();
-          if (apiKey) {
-            document.getElementById('api-banner').style.display = 'none';
-            console.log('API 키 로드 완료 (config/api_config.js)');
-          }
         }
-      } catch (e) { /* api_config.js 없는 경우 무시 */ }
+        if (apiKey) {
+          document.getElementById('api-banner').style.display = 'none';
+          console.log('API 키 로드 완료');
+        }
+      } catch (e) { }
     })();
 
-    // ═══════════════════════════════════════════════
-    //  NAVIGATION
-    // ═══════════════════════════════════════════════
     function showPage(name) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === name));
@@ -1389,21 +526,15 @@
       if (name === 'live') initLiveCanvas();
     }
 
-    // ═══════════════════════════════════════════════
-    //  API KEY
-    // ═══════════════════════════════════════════════
     function saveApiKey() {
       const v = document.getElementById('apiKeyInput').value.trim();
-      if (!v.startsWith('sk-ant-') && v !== '') { alert('올바른 Anthropic API 키를 입력하세요 (sk-ant- 로 시작)'); return; }
+      if (!v) { alert('API 키를 입력하세요'); return; }
       apiKey = v;
       document.getElementById('api-banner').style.display = 'none';
-      showToast('API 키가 세션에 저장되었습니다. 영구 저장은 config/api_config.js를 수정하세요.');
+      showToast('API 키가 세션에 저장되었습니다.');
     }
     function skipApiKey() { document.getElementById('api-banner').style.display = 'none'; }
 
-    // ═══════════════════════════════════════════════
-    //  FILE UPLOAD
-    // ═══════════════════════════════════════════════
     function onDragOver(e) { e.preventDefault(); document.getElementById('uploadArea').classList.add('drag-over'); }
     function onDragLeave(e) { document.getElementById('uploadArea').classList.remove('drag-over'); }
     function onDrop(e) {
@@ -1458,14 +589,11 @@
       ctx.stroke();
     }
 
-    // ═══════════════════════════════════════════════
-    //  BROWSER STT
-    // ═══════════════════════════════════════════════
     let uploadRecognition = null;
     function startBrowserSTT() {
       const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SR) { alert('이 브라우저는 음성 인식을 지원하지 않습니다 (Chrome 권장)'); return; }
-      if (uploadRecognition) { uploadRecognition.stop(); uploadRecognition = null; document.getElementById('sttBtn').textContent = '🎙️ 음성 인식 시작'; return; }
+      if (uploadRecognition) { uploadRecognition.stop(); uploadRecognition = null; document.getElementById('sttBtn').textContent = '🎙️ 브라우저 STT'; return; }
       const lang = document.getElementById('langSelect').value;
       uploadRecognition = new SR();
       uploadRecognition.lang = lang === 'auto' ? 'ko-KR' : lang;
@@ -1478,15 +606,77 @@
         checkLangMismatch();
       };
       uploadRecognition.onerror = e => console.error(e);
-      uploadRecognition.onend = () => { uploadRecognition = null; document.getElementById('sttBtn').textContent = '🎙️ 음성 인식 시작'; };
+      uploadRecognition.onend = () => { uploadRecognition = null; document.getElementById('sttBtn').textContent = '🎙️ 브라우저 STT'; };
       uploadRecognition.start();
       document.getElementById('sttBtn').textContent = '⏹ 중지';
     }
     function clearTranscript() { document.getElementById('transcriptArea').value = ''; document.getElementById('langMismatchAlert').style.display = 'none'; }
 
-    // ═══════════════════════════════════════════════
-    //  언어 불일치 힌트 (NEW - analysis.py 기능)
-    // ═══════════════════════════════════════════════
+    // 파일을 Base64로 변환
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = error => reject(error);
+      });
+    }
+
+    // Gemini STT
+    async function extractTranscriptWithGemini() {
+      if (!apiKey) {
+        showToast('API 키를 먼저 입력해주세요', true);
+        document.getElementById('api-banner').style.display = 'flex';
+        return;
+      }
+      if (!uploadedFile) {
+        showToast('먼저 오디오나 비디오 파일을 업로드해주세요.', true);
+        return;
+      }
+
+      const btn = document.getElementById('aiSttBtn');
+      const transcriptArea = document.getElementById('transcriptArea');
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;margin-right:5px;"></span>추출 중...';
+      transcriptArea.value = 'Gemini가 미디어 파일에서 텍스트를 추출하고 있습니다. 잠시만 기다려주세요...';
+
+      try {
+        const base64Data = await fileToBase64(uploadedFile);
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+        const payload = {
+          contents: [{
+            parts: [
+              { text: "이 오디오/비디오 파일에서 사람이 말하는 내용을 그대로 받아쓰기(Transcript) 해주세요. 다른 부가 설명 없이 오직 화자가 말한 텍스트만 출력하세요." },
+              { inline_data: { mime_type: uploadedFile.type, data: base64Data } }
+            ]
+          }]
+        };
+
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (data.error) throw new Error(data.error.message);
+
+        const text = data.candidates[0].content.parts[0].text;
+        transcriptArea.value = text;
+        showToast('전사 텍스트 추출이 완료되었습니다! ✓');
+        document.getElementById('analyzeBtn').disabled = false;
+
+      } catch (e) {
+        transcriptArea.value = '';
+        showToast(`추출 실패: ${e.message}`, true);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '✨ AI 영상/음성 자동 전사';
+      }
+    }
+
     function checkLangMismatch() {
       const text = document.getElementById('transcriptArea').value;
       const lang = document.getElementById('langSelect').value;
@@ -1501,11 +691,7 @@
       else el.style.display = 'none';
     }
 
-    // ═══════════════════════════════════════════════
-    //  AUDIO ANALYSIS
-    // ═══════════════════════════════════════════════
     function rmsToDb(rms) { return 20 * Math.log10(Math.max(rms, 1e-9)); }
-
     function detectPauses(data, sr, threshDb, minPauseMs) {
       const frameSize = Math.round(sr * 0.02);
       const minFrames = Math.round((minPauseMs / 1000) * sr / frameSize);
@@ -1538,7 +724,6 @@
       return bins;
     }
 
-    // 구간별 에너지 기반 속도 추정 (02_Upload_Analysis.py 기능 포팅)
     function computeSpeedBins(data, sr, binSec = 5) {
       const binLen = Math.round(sr * binSec);
       const bins = [];
@@ -1547,13 +732,11 @@
         let sum = 0;
         for (const v of seg) sum += v * v;
         const energy = Math.sqrt(sum / seg.length);
-        // 에너지를 0~200 WPM 범위로 스케일링 (상대적 속도 추이 시각화용)
         bins.push({ t: i / sr, energy: Math.min(200, energy * 3000) });
       }
       return bins;
     }
 
-    // 목소리 떨림 분석 (02_Upload_Analysis.py: compute_voice_tremor_metrics 포팅)
     function computeVoiceTremor(data, sr) {
       const frameMs = 40, hopMs = 10;
       const hopLen = Math.max(1, Math.round(sr * hopMs / 1000));
@@ -1565,9 +748,7 @@
         rmsFrames.push(Math.sqrt(sum / frameLen));
       }
       if (rmsFrames.length < 10) return { score: 0, level: '분석 불가' };
-      // 전체 RMS의 평균
       const mean = rmsFrames.reduce((a, b) => a + b, 0) / rmsFrames.length;
-      // 3-12Hz 범위 떨림 추정: RMS variance / mean
       let variance = 0;
       for (const v of rmsFrames) variance += (v - mean) ** 2;
       variance /= rmsFrames.length;
@@ -1585,7 +766,6 @@
       return all.map(f => ({ f, n: (lower.match(new RegExp(`\\b${f}\\b`, 'gi')) || []).length })).filter(x => x.n > 0);
     }
 
-    // 말하기 속도 코멘트 (analysis.py: speaking_speed_comment 포팅)
     function speakingSpeedComment(wpm) {
       if (!wpm || wpm === 0) return '발표 길이나 텍스트가 없어 속도를 평가하지 못했어요.';
       if (wpm < 90) return '🐢 조금 느린 편이에요. 문장 사이 템포는 좋지만 너무 천천히 느껴질 수 있어요.';
@@ -1593,7 +773,6 @@
       return '🐇 조금 빠른 편이에요. 중요한 부분에서 잠깐 멈추거나 포인트를 강조하면 더 좋겠어요.';
     }
 
-    // 구조 분석 (analysis.py: get_structure_suggestion 포팅)
     function getStructureSuggestion(text) {
       const lower = text.toLowerCase();
       const introKw = ['안녕하세요', '반갑습니다', '오늘', '발표', '소개', '시작', 'good morning', 'good afternoon', 'hello', 'today i will', 'i\'m going to'];
@@ -1609,9 +788,6 @@
       ];
     }
 
-    // ═══════════════════════════════════════════════
-    //  MAIN ANALYSIS
-    // ═══════════════════════════════════════════════
     function runAnalysis() {
       const buf = uploadedAudioBuffer;
       if (!buf) { showToast('먼저 파일을 업로드하세요', true); return; }
@@ -1623,55 +799,39 @@
       const volWarnDb = parseInt(document.getElementById('volWarn').value);
       const binSec = parseInt(document.getElementById('binSec').value);
 
-      // RMS
       let sum = 0;
       for (const v of data) sum += v * v;
       const rmsDb = rmsToDb(Math.sqrt(sum / data.length));
 
-      // Pauses
       const pauses = detectPauses(data, sr, threshDb, minPauseMs);
       const pauseTotal = pauses.reduce((a, p) => a + (p.end - p.start), 0);
 
-      // WPM from transcript
       const text = document.getElementById('transcriptArea').value.trim();
       const wordCount = text ? text.split(/\s+/).length : 0;
       const wpm = text && dur > 0 ? (wordCount / (dur / 60)) : 0;
 
-      // Volume bins & speed bins
       const bins = computeVolumeBins(data, sr, binSec);
       const speedBins = computeSpeedBins(data, sr, binSec);
 
-      // Fillers
       const fillers = text ? countFillers(text) : [];
-
-      // Voice tremor
       const tremor = document.getElementById('tremorToggle').checked ? computeVoiceTremor(data, sr) : null;
-
-      // Structure
       const structure = document.getElementById('structureToggle').checked && text ? getStructureSuggestion(text) : null;
 
-      // Save for CSV export
       lastAnalysisData = { dur, wpm, rmsDb, pauseTotal, fillers, pauses };
-
-      // Show results
       document.getElementById('analysisResults').style.display = 'block';
 
-      // Metrics
       document.getElementById('metricsRow').innerHTML = `
-    <div class="metric-card"><div class="metric-val">${dur.toFixed(1)}s</div><div class="metric-label">발표 길이</div></div>
-    <div class="metric-card"><div class="metric-val">${wpm > 0 ? wpm.toFixed(0) : '-'}</div><div class="metric-label">WPM</div></div>
-    <div class="metric-card"><div class="metric-val" style="color:${rmsDb < volWarnDb ? 'var(--danger)' : 'var(--success)'}">${rmsDb.toFixed(1)}</div><div class="metric-label">평균 볼륨 dBFS</div></div>
-    <div class="metric-card"><div class="metric-val">${pauseTotal.toFixed(1)}s</div><div class="metric-label">총 침묵</div></div>
-    <div class="metric-card"><div class="metric-val">${pauses.length}</div><div class="metric-label">침묵 횟수</div></div>
-    <div class="metric-card"><div class="metric-val">${wordCount}</div><div class="metric-label">단어 수</div></div>
-  `;
+        <div class="metric-card"><div class="metric-val">${dur.toFixed(1)}s</div><div class="metric-label">발표 길이</div></div>
+        <div class="metric-card"><div class="metric-val">${wpm > 0 ? wpm.toFixed(0) : '-'}</div><div class="metric-label">WPM</div></div>
+        <div class="metric-card"><div class="metric-val" style="color:${rmsDb < volWarnDb ? 'var(--danger)' : 'var(--success)'}">${rmsDb.toFixed(1)}</div><div class="metric-label">평균 볼륨 dBFS</div></div>
+        <div class="metric-card"><div class="metric-val">${pauseTotal.toFixed(1)}s</div><div class="metric-label">총 침묵</div></div>
+        <div class="metric-card"><div class="metric-val">${pauses.length}</div><div class="metric-label">침묵 횟수</div></div>
+        <div class="metric-card"><div class="metric-val">${wordCount}</div><div class="metric-label">단어 수</div></div>
+      `;
 
-      // 속도 코멘트 (NEW)
       const speedCmt = speakingSpeedComment(wpm);
-      document.getElementById('speedCommentBox').innerHTML =
-        `<div class="alert ${wpm > 0 && wpm >= 90 && wpm <= 140 ? 'alert-success' : 'alert-warn'}">${speedCmt}</div>`;
+      document.getElementById('speedCommentBox').innerHTML = `<div class="alert ${wpm > 0 && wpm >= 90 && wpm <= 140 ? 'alert-success' : 'alert-warn'}">${speedCmt}</div>`;
 
-      // Volume chart
       if (volumeChartInst) volumeChartInst.destroy();
       volumeChartInst = new Chart(document.getElementById('volumeChart').getContext('2d'), {
         type: 'line',
@@ -1679,87 +839,66 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5a6a85' }, grid: { color: 'rgba(255,255,255,.05)' } }, y: { ticks: { color: '#5a6a85' }, grid: { color: 'rgba(255,255,255,.05)' } } } }
       });
 
-      // 속도 추이 차트 (NEW - 02_Upload_Analysis.py: speed bins)
       if (speedChartInst) speedChartInst.destroy();
       speedChartInst = new Chart(document.getElementById('speedTrendChart').getContext('2d'), {
         type: 'line',
         data: {
           labels: speedBins.map(b => b.t.toFixed(0) + 's'),
-          datasets: [{
-            label: '에너지 기반 속도',
-            data: speedBins.map(b => b.energy),
-            borderColor: '#00d68f', backgroundColor: 'rgba(0,214,143,.1)',
-            borderWidth: 2, pointRadius: 3, fill: true, tension: 0.4
-          }]
+          datasets: [{ label: '에너지 기반 속도', data: speedBins.map(b => b.energy), borderColor: '#00d68f', backgroundColor: 'rgba(0,214,143,.1)', borderWidth: 2, pointRadius: 3, fill: true, tension: 0.4 }]
         },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `속도 에너지: ${ctx.parsed.y.toFixed(1)}` } } },
-          scales: { x: { ticks: { color: '#5a6a85' }, grid: { color: 'rgba(255,255,255,.05)' } }, y: { ticks: { color: '#5a6a85' }, grid: { color: 'rgba(255,255,255,.05)' }, beginAtZero: true } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `속도 에너지: ${ctx.parsed.y.toFixed(1)}` } } }, scales: { x: { ticks: { color: '#5a6a85' }, grid: { color: 'rgba(255,255,255,.05)' } }, y: { ticks: { color: '#5a6a85' }, grid: { color: 'rgba(255,255,255,.05)' }, beginAtZero: true } } }
       });
       const trendCmt = document.getElementById('speedTrendComment');
       trendCmt.style.display = 'block';
       trendCmt.textContent = 'ℹ️ 에너지 기반 상대적 속도 추이입니다. 그래프가 일정하면 안정적인 발표 속도를 유지하고 있습니다. 급격한 변화는 속도 조절이 필요한 구간입니다.';
 
-      // 침묵 구간 (개선: 4초 이상 조언 포함 - 02_Upload_Analysis.py 기능)
       const tips = ['예시를 들어보세요.', '핵심 키워드를 다시 강조해 보세요.', '청중에게 질문을 던져보세요.', '다음 내용을 미리 예고해 보세요.', '간단히 요약하고 넘어가 보세요.'];
       const pauseHtml = pauses.length ? `
-    <table>
-      <tr><th>시작</th><th>끝</th><th>길이</th><th>💡 조언</th></tr>
-      ${pauses.map(p => {
+        <table>
+          <tr><th>시작</th><th>끝</th><th>길이</th><th>💡 조언</th></tr>
+          ${pauses.map(p => {
         const d = p.end - p.start;
         const tip = d >= 4 ? tips[Math.floor(Math.random() * tips.length)] : '';
-        return `<tr>
-          <td>${p.start.toFixed(1)}s</td>
-          <td>${p.end.toFixed(1)}s</td>
-          <td style="color:${d > 4 ? 'var(--warn)' : d > 2 ? 'var(--text2)' : 'var(--success)'}"><strong>${d.toFixed(1)}s</strong></td>
-          <td style="color:var(--text3);font-size:.82rem">${tip}</td>
-        </tr>`;
+        return `<tr><td>${p.start.toFixed(1)}s</td><td>${p.end.toFixed(1)}s</td><td style="color:${d > 4 ? 'var(--warn)' : d > 2 ? 'var(--text2)' : 'var(--success)'}"><strong>${d.toFixed(1)}s</strong></td><td style="color:var(--text3);font-size:.82rem">${tip}</td></tr>`;
       }).join('')}
-    </table>` : '<div class="alert alert-info">😊 감지된 침묵이 없습니다</div>';
+        </table>` : '<div class="alert alert-info">😊 감지된 침묵이 없습니다</div>';
       document.getElementById('pauseTable').innerHTML = pauseHtml;
 
-      // 볼륨 경고 (NEW)
       if (rmsDb < volWarnDb) {
-        document.getElementById('pausePanel').insertAdjacentHTML('beforebegin',
-          `<div class="alert alert-warn">🔊 평균 볼륨(${rmsDb.toFixed(1)} dBFS)이 낮습니다. 조금 더 크게 말해보세요.</div>`);
+        document.getElementById('pausePanel').insertAdjacentHTML('beforebegin', `<div class="alert alert-warn">🔊 평균 볼륨(${rmsDb.toFixed(1)} dBFS)이 낮습니다. 조금 더 크게 말해보세요.</div>`);
       }
 
-      // Fillers
       const fillerSection = document.getElementById('fillerChips');
       fillerSection.innerHTML = fillers.length
         ? fillers.map(x => `<div class="filler-chip">${x.f} <span>${x.n}회</span></div>`).join('')
         : '<span style="color:var(--text3);font-size:.9rem">감지된 추임새 없음</span>';
 
-      // 구조 분석 (NEW - analysis.py: get_structure_suggestion 포팅)
       const structPanel = document.getElementById('structureResult');
       if (!text) {
         structPanel.innerHTML = '<p style="color:var(--text3);font-size:.85rem">전사 텍스트가 없어 구조 분석을 건너뜁니다.</p>';
       } else if (structure) {
         structPanel.innerHTML = structure.map(item => `
-      <div class="struct-item">
-        <div class="struct-icon ${item.ok ? 'struct-ok' : 'struct-warn'}">${item.ok ? '✓' : '!'}</div>
-        <span style="color:var(--text2)">${item.ok ? item.ok_msg : item.warn_msg}</span>
-      </div>`).join('');
+          <div class="struct-item">
+            <div class="struct-icon ${item.ok ? 'struct-ok' : 'struct-warn'}">${item.ok ? '✓' : '!'}</div>
+            <span style="color:var(--text2)">${item.ok ? item.ok_msg : item.warn_msg}</span>
+          </div>`).join('');
       }
 
-      // 목소리 떨림 (NEW - 02_Upload_Analysis.py: compute_voice_tremor_metrics 포팅)
       const tremorEl = document.getElementById('tremorResult');
       if (tremor) {
         const barColor = tremor.score < 0.15 ? 'var(--success)' : tremor.score < 0.3 ? 'var(--warn)' : 'var(--danger)';
         const barPct = Math.min(100, tremor.score * 333);
         tremorEl.innerHTML = `
-      <div style="display:flex;justify-content:space-between;margin-bottom:.4rem">
-        <span style="font-size:.88rem;color:var(--text2)">떨림 지표: <strong style="color:${barColor}">${tremor.level}</strong></span>
-        <span style="font-size:.82rem;color:var(--text3)">score: ${tremor.score.toFixed(3)}</span>
-      </div>
-      <div class="tremor-bar-wrap"><div class="tremor-bar" style="width:${barPct}%;background:${barColor}"></div></div>
-      <p style="font-size:.82rem;color:var(--text3);margin-top:.5rem">
-        ${tremor.score >= 0.30 ? '⚠️ 목소리 떨림이 감지되었습니다. 복식호흡 연습과 느린 템포 유지를 권장합니다.' :
+          <div style="display:flex;justify-content:space-between;margin-bottom:.4rem">
+            <span style="font-size:.88rem;color:var(--text2)">떨림 지표: <strong style="color:${barColor}">${tremor.level}</strong></span>
+            <span style="font-size:.82rem;color:var(--text3)">score: ${tremor.score.toFixed(3)}</span>
+          </div>
+          <div class="tremor-bar-wrap"><div class="tremor-bar" style="width:${barPct}%;background:${barColor}"></div></div>
+          <p style="font-size:.82rem;color:var(--text3);margin-top:.5rem">
+            ${tremor.score >= 0.30 ? '⚠️ 목소리 떨림이 감지되었습니다. 복식호흡 연습과 느린 템포 유지를 권장합니다.' :
             tremor.score >= 0.15 ? '📊 약간의 떨림이 있습니다. 발표 전 충분한 연습으로 안정감을 높여보세요.' :
               '✅ 목소리가 안정적입니다. 좋은 발표 상태입니다!'}
-      </p>`;
+          </p>`;
       } else {
         tremorEl.innerHTML = '<p style="color:var(--text3);font-size:.85rem">떨림 분석이 비활성화되어 있습니다.</p>';
       }
@@ -1767,48 +906,64 @@
       document.getElementById('analysisResults').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // ═══════════════════════════════════════════════
-    //  AI FEEDBACK (Upload)
-    // ═══════════════════════════════════════════════
+    // Gemini 피드백 (파일 분석)
     async function requestAIFeedback() {
       if (!apiKey) { showToast('API 키를 먼저 입력해주세요', true); document.getElementById('api-banner').style.display = 'flex'; return; }
+      
       const text = document.getElementById('transcriptArea').value.trim();
       if (!text) { showToast('전사 텍스트가 없습니다', true); return; }
+      
       const box = document.getElementById('aiFeedbackBox');
-      box.innerHTML = '<span class="thinking"><span class="spinner"></span> AI가 분석 중입니다...</span>';
+      box.innerHTML = '<span class="thinking"><span class="spinner"></span> Gemini가 분석 중입니다...</span>';
+      
       const buf = uploadedAudioBuffer;
       const dur = buf ? buf.duration : 0;
       const wpm = text && dur > 0 ? Math.round(text.split(/\s+/).length / (dur / 60)) : 0;
       const fillers = countFillers(text);
       const structure = getStructureSuggestion(text);
       const structSummary = structure.map((s, i) => ['서론', '본론', '결론'][i] + ': ' + (s.ok ? '있음' : '없음')).join(', ');
+      
+      const promptText = `당신은 전문적인 발표 코치입니다. 다음 발표 전사 텍스트와 통계 지표를 분석하고 구체적인 개선점을 알려주세요. 마크다운을 사용하지 말고 줄바꿈을 활용해 가독성 좋게 간결히 답변하세요.
+
+[통계 지표]
+- 발표 길이: ${dur.toFixed(1)}초
+- 말하기 속도: ${wpm} WPM
+- 추임새: ${fillers.map(f => f.f + ' ' + f.n + '회').join(', ') || '없음'}
+- 구조: ${structSummary}
+
+[전사 텍스트]
+"${text}"`;
+
       try {
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        
+        const res = await fetch(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514', max_tokens: 1000,
-            system: '당신은 발표 코치입니다. 친절하고 구체적인 피드백을 제공하세요. 마크다운을 사용하지 말고 간결하게 답변하세요.',
-            messages: [{ role: 'user', content: `다음 발표 전사 텍스트와 통계를 분석하고 개선점을 알려주세요.\n\n발표 길이: ${dur.toFixed(1)}초\n말하기 속도: ${wpm} WPM\n추임새: ${fillers.map(f => f.f + ' ' + f.n + '회').join(', ') || '없음'}\n구조: ${structSummary}\n\n전사 텍스트:\n"${text.slice(0, 800)}"` }]
+            contents: [{ parts: [{ text: promptText }] }],
+            generationConfig: { maxOutputTokens: 1000, temperature: 0.7 }
           })
         });
+        
         const data = await res.json();
-        box.innerHTML = (data.content?.map(c => c.text || '').join('') || '응답 없음').replace(/\n/g, '<br>');
+        
+        if (data.error) throw new Error(data.error.message);
+        
+        const feedbackResult = data.candidates[0].content.parts[0].text;
+        box.innerHTML = feedbackResult.replace(/\n/g, '<br>');
+        
       } catch (e) {
         box.innerHTML = `<span style="color:var(--danger)">오류: ${e.message}</span>`;
       }
     }
 
-    // ═══════════════════════════════════════════════
-    //  내보내기 기능 (NEW - 02_Upload_Analysis.py 기능 포팅)
-    // ═══════════════════════════════════════════════
     function exportTxt() {
       const text = document.getElementById('transcriptArea').value;
       if (!text) { showToast('내보낼 텍스트가 없습니다', true); return; }
       download(text, 'transcript.txt', 'text/plain;charset=utf-8');
     }
 
-    // SRT 자막 생성 (timestamps를 단어 수 비율로 추정)
     function exportSRT() {
       const text = document.getElementById('transcriptArea').value.trim();
       const buf = uploadedAudioBuffer;
@@ -1882,9 +1037,6 @@
       a.download = filename; a.click();
     }
 
-    // ═══════════════════════════════════════════════
-    //  LIVE ANALYSIS
-    // ═══════════════════════════════════════════════
     function initLiveCanvas() {
       const canvas = document.getElementById('liveWaveCanvas');
       if (canvas) {
@@ -1896,14 +1048,10 @@
       }
     }
 
-    // 시선 감지 (브라우저 FaceDetector API - 01_Live_Analysis.py 기능 포팅)
     let faceDetector = null;
     async function initFaceDetector() {
       if ('FaceDetector' in window) {
-        try {
-          faceDetector = new FaceDetector({ fastMode: true });
-          return true;
-        } catch (e) { return false; }
+        try { faceDetector = new FaceDetector({ fastMode: true }); return true; } catch (e) { return false; }
       }
       return false;
     }
@@ -1934,7 +1082,6 @@
         document.getElementById('camOverlay').style.display = 'flex';
       }
 
-      // Audio analysis
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const src = ctx.createMediaStreamSource(liveStream);
       liveAnalyser = ctx.createAnalyser();
@@ -1942,7 +1089,6 @@
       src.connect(liveAnalyser);
       audioCtx = ctx;
 
-      // Speech recognition
       liveRecognition = new SR();
       liveRecognition.lang = (document.getElementById('langSelect')?.value === 'en-US') ? 'en-US' : 'ko-KR';
       liveRecognition.continuous = true;
@@ -1964,7 +1110,6 @@
       liveRecognition.onend = () => { if (liveStream) liveRecognition.start(); };
       liveRecognition.start();
 
-      // Timer + silence check
       liveStartTime = Date.now();
       liveLastSpeech = Date.now();
       liveTimerInterval = setInterval(() => {
@@ -1985,7 +1130,6 @@
         document.getElementById('lm-silence').textContent = liveSilenceTotal.toFixed(0) + 's';
       }, 1000);
 
-      // 시선 감지 (01_Live_Analysis.py: check_gaze 포팅)
       if (useCam && useGaze) {
         const gazeOk = await initFaceDetector();
         if (gazeOk) {
@@ -1994,12 +1138,8 @@
             const result = await checkGazeFromVideo(video);
             const gazeAlert = document.getElementById('gaze-alert');
             liveGazeTotalCount++;
-            if (result === 'forward') {
-              liveGazeOkCount++;
-              gazeAlert.style.display = 'none';
-            } else if (result === 'sideways' || result === 'no_face') {
-              gazeAlert.style.display = 'block';
-            }
+            if (result === 'forward') { liveGazeOkCount++; gazeAlert.style.display = 'none'; } 
+            else if (result === 'sideways' || result === 'no_face') { gazeAlert.style.display = 'block'; }
             const gazeRate = liveGazeTotalCount > 0 ? Math.round(liveGazeOkCount / liveGazeTotalCount * 100) : '-';
             document.getElementById('lm-gaze').textContent = gazeRate + '%';
           }, 2000);
@@ -2087,58 +1227,74 @@
       document.getElementById('lm-gaze').textContent = '-';
     }
 
-    // 라이브 구조 분석 (NEW - analysis.py 기능)
     function analyzeLiveStructure() {
       const text = liveFullText.trim();
       const el = document.getElementById('liveStructureResult');
       if (!text) { el.innerHTML = '<span style="color:var(--text3)">전사 텍스트가 없습니다.</span>'; return; }
       const structure = getStructureSuggestion(text);
       el.innerHTML = structure.map(item => `
-    <div class="struct-item">
-      <div class="struct-icon ${item.ok ? 'struct-ok' : 'struct-warn'}">${item.ok ? '✓' : '!'}</div>
-      <span style="color:var(--text2);font-size:.85rem">${item.ok ? item.ok_msg : item.warn_msg}</span>
-    </div>`).join('');
+        <div class="struct-item">
+          <div class="struct-icon ${item.ok ? 'struct-ok' : 'struct-warn'}">${item.ok ? '✓' : '!'}</div>
+          <span style="color:var(--text2);font-size:.85rem">${item.ok ? item.ok_msg : item.warn_msg}</span>
+        </div>`).join('');
     }
 
+    // Gemini 라이브 피드백
     async function requestLiveAIFeedback() {
       if (!apiKey) { showToast('API 키를 먼저 입력해주세요', true); document.getElementById('api-banner').style.display = 'flex'; return; }
       const text = liveFullText.trim();
       if (!text) { showToast('전사 텍스트가 없습니다', true); return; }
+      
       const box = document.getElementById('liveAiBox');
-      box.innerHTML = '<span class="thinking"><span class="spinner"></span> AI가 분석 중입니다...</span>';
+      box.innerHTML = '<span class="thinking"><span class="spinner"></span> Gemini가 분석 중입니다...</span>';
+      
       const sec = (Date.now() - liveStartTime) / 1000;
       const wpm = Math.round(text.split(/\s+/).length / (sec / 60));
       const fillers = [...FILLERS_KO, ...FILLERS_EN].map(f => ({ f, n: (text.match(new RegExp(`\\b${f}\\b`, 'gi')) || []).length })).filter(x => x.n > 0);
       const structure = getStructureSuggestion(text);
       const structSummary = structure.map((s, i) => ['서론', '본론', '결론'][i] + ': ' + (s.ok ? '있음' : '없음')).join(', ');
       const gazeRate = liveGazeTotalCount > 0 ? Math.round(liveGazeOkCount / liveGazeTotalCount * 100) + '%' : '측정 불가';
+      
+      const promptText = `당신은 전문적인 발표 코치입니다. 실시간 발표 분석 결과입니다. 개선점을 구체적으로 알려주세요. 마크다운을 사용하지 말고 줄바꿈을 활용해 가독성 좋게 간결히 답변하세요.
+
+[통계 지표]
+- 발표 시간: ${sec.toFixed(0)}초
+- 말하기 속도: ${wpm} WPM
+- 추임새: ${fillers.map(f => f.f + ' ' + f.n + '회').join(', ') || '없음'}
+- 침묵 시간: ${liveSilenceTotal.toFixed(1)}초
+- 시선 응시율: ${gazeRate}
+- 구조: ${structSummary}
+
+[발표 내용]
+"${text.slice(0, 600)}"`;
+
       try {
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        
+        const res = await fetch(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514', max_tokens: 800,
-            system: '당신은 발표 코치입니다. 친절하고 구체적인 피드백을 제공하세요.',
-            messages: [{ role: 'user', content: `실시간 발표 분석 결과입니다. 개선점을 구체적으로 알려주세요.\n\n발표 시간: ${sec.toFixed(0)}초\n말하기 속도: ${wpm} WPM\n추임새: ${fillers.map(f => f.f + ' ' + f.n + '회').join(', ') || '없음'}\n침묵 시간: ${liveSilenceTotal.toFixed(1)}초\n시선 응시율: ${gazeRate}\n구조: ${structSummary}\n\n발표 내용:\n"${text.slice(0, 600)}"` }]
+            contents: [{ parts: [{ text: promptText }] }],
+            generationConfig: { maxOutputTokens: 800, temperature: 0.7 }
           })
         });
+        
         const data = await res.json();
-        box.innerHTML = (data.content?.map(c => c.text || '').join('') || '응답 없음').replace(/\n/g, '<br>');
+        
+        if (data.error) throw new Error(data.error.message);
+        
+        const feedbackResult = data.candidates[0].content.parts[0].text;
+        box.innerHTML = feedbackResult.replace(/\n/g, '<br>');
+        
       } catch (e) {
         box.innerHTML = `<span style="color:var(--danger)">오류: ${e.message}</span>`;
       }
     }
 
-    // ═══════════════════════════════════════════════
-    //  TOAST
-    // ═══════════════════════════════════════════════
     function showToast(msg, isErr = false) {
       const t = document.createElement('div');
-      t.style.cssText = `position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);
-    padding:.65rem 1.25rem;border-radius:10px;font-size:.9rem;z-index:9999;
-    animation:fadeIn .3s;
-    background:${isErr ? 'rgba(255,77,109,.9)' : 'rgba(0,229,204,.9)'};
-    color:${isErr ? '#fff' : '#070b14'};font-weight:600;`;
+      t.style.cssText = `position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%); padding:.65rem 1.25rem;border-radius:10px;font-size:.9rem;z-index:9999; animation:fadeIn .3s; background:${isErr ? 'rgba(255,77,109,.9)' : 'rgba(0,229,204,.9)'}; color:${isErr ? '#fff' : '#070b14'};font-weight:600;`;
       t.textContent = msg;
       document.body.appendChild(t);
       setTimeout(() => t.remove(), 3000);
